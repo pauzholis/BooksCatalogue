@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www/thymeleaf.org">
+<head>
+    <title>Информация о книге</title>
+</head>
+<body>
+<a th:href="@{/index}">Главная</a>
+<a th:href="@{/authors}">Авторы</a>
+<a th:href="@{/books}">Книги</a>
+<a th:href="@{/addBookPage}">Добавление книги</a>
+<h1>Информация о книге</h1>
+<td>
+    <a th:text="${bookById.name}" ></a>
+</td>
+<br>
+<br>
+<div>
+    <table border="1">
+        <tr>
+            <th>Авторы</th>
+        </tr>
+        <th:block th:each="authorView : ${bookAuthors}">
+            <tr>
+                <td>
+                    <a th:href="@{'/findAuthor/' + ${authorView.id}}"
+                       th:text="${authorView.lastName + ' ' + authorView.firstName + ' ' + authorView.middleName}" ></a>
+                </td>
+            </tr>
+        </th:block>
+    </table>
+</div>
+</body>
+</html>

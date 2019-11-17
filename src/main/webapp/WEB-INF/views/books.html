@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www/thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <title>Список книг</title>
+
+</head>
+<body>
+<a th:href="@{/index}">Главная</a>
+<a th:href="@{/authors}">Авторы</a>
+<a th:href="@{/books}">Книги</a>
+<a th:href="@{/addBookPage}">Добавление книги</a>
+<h1>Список книг</h1>
+<form action="#" th:action="@{/findBooks/submit} "
+      th:object="${bookView}" method="POST" accept-charset="UTF-8">
+    <div class="form-group">
+        <label>Наименование книги</label>
+        <input type="text" class="form-control" th:field="*{name}"/>
+    </div>
+    <button type="submit">Найти</button>
+</form>
+<br>
+<div>
+    <table border="1">
+        <tr>
+            <th>Книги</th>
+        </tr>
+        <th:block th:each="bookView : ${allBooks}">
+            <tr>
+                <td>
+                    <a th:href="@{'/findBook/' + ${bookView.id}}"
+                       th:text="${bookView.name}" ></a>
+                </td>
+            </tr>
+        </th:block>
+    </table>
+</div>
+</body>
+</html>

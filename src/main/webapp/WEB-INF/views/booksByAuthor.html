@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www/thymeleaf.org">
+<head>
+    <title>Найденные книги автора</title>
+</head>
+<body>
+<a th:href="@{/index}">Главная</a>
+<a th:href="@{/authors}">Авторы</a>
+<a th:href="@{/books}">Книги</a>
+<a th:href="@{/addBookPage}">Добавление книги</a>
+<h1>Книги автора</h1>
+<div>
+    <table border="1">
+        <tr>
+            <th>Название</th>
+        </tr>
+        <tr th:each="bookView : ${booksByAuthorList}">
+            <td th:utext="${bookView.name}">...</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
