@@ -81,7 +81,11 @@ public class WebBookService implements BookService {
     @Transactional
     public BookView getBookById(Long id) {
         Book book = bookDao.getBookById(id);
-        return new BookView(book.getId(), book.getName());
+        if (book != null) {
+            return new BookView(book.getId(), book.getName());
+        } else {
+            throw new IllegalStateException("Не найдена книга с идентификатором " + id);
+        }
     }
 
     /**
@@ -91,16 +95,21 @@ public class WebBookService implements BookService {
     @Transactional
     public List<AuthorView> getBookAuthorsByBookId(Long bookId) {
         Book book = bookDao.getBookById(bookId);
-        List<Author> authors = new ArrayList<>(book.getAuthors());
-        Function<Author, AuthorView> mapAuthor = a -> {
-            AuthorView authorView = new AuthorView();
-            authorView.id = a.getId();
-            authorView.lastName = a.getLastName();
-            authorView.firstName = a.getFirstName();
-            authorView.middleName = a.getMiddleName();
-            return authorView;
-        };
-        return authors.stream().map(mapAuthor).collect(Collectors.toList());
+        if (book != null) {
+            List<Author> authors = new ArrayList<>(book.getAuthors());
+            Function<Author, AuthorView> mapAuthor = a -> {
+                AuthorView authorView = new AuthorView();
+                authorView.id = a.getId();
+                authorView.lastName = a.getLastName();
+                authorView.firstName = a.getFirstName();
+                authorView.middleName = a.getMiddleName();
+                return authorView;
+            };
+            return authors.stream().map(mapAuthor).collect(Collectors.toList());
+        } else {
+            throw new IllegalStateException("Не найдена книга с идентификатором " + bookId);
+        }
+
     }
 
     /**

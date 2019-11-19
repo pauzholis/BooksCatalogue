@@ -57,7 +57,11 @@ public class WebAuthorService implements AuthorService {
     @Transactional
     public AuthorView getAuthorById(Long id) {
         Author author = authorDao.getAuthorById(id);
-        return new AuthorView(author.getId(), author.getLastName(), author.getFirstName(), author.getMiddleName());
+        if (author != null) {
+            return new AuthorView(author.getId(), author.getLastName(), author.getFirstName(), author.getMiddleName());
+        } else {
+            throw new IllegalStateException("Невозможно найти автора по идентификатору " + id);
+        }
     }
 
     /**
@@ -67,14 +71,18 @@ public class WebAuthorService implements AuthorService {
     @Transactional
     public List<BookView> getAuthorBooksByAuthorId(Long authorId) {
         Author author = authorDao.getAuthorById(authorId);
-        List<Book> authors = new ArrayList<>(author.getBooks());
-        Function<Book, BookView> mapBook = b -> {
-            BookView bookView = new BookView();
-            bookView.id = b.getId();
-            bookView.name = b.getName();
-            return bookView;
-        };
-        return authors.stream().map(mapBook).collect(Collectors.toList());
+        if (author != null) {
+            List<Book> authors = new ArrayList<>(author.getBooks());
+            Function<Book, BookView> mapBook = b -> {
+                BookView bookView = new BookView();
+                bookView.id = b.getId();
+                bookView.name = b.getName();
+                return bookView;
+            };
+            return authors.stream().map(mapBook).collect(Collectors.toList());
+        } else {
+            throw new IllegalStateException("Невозможно найти автора по идентификатору " + authorId);
+        }
     }
 
     /**
