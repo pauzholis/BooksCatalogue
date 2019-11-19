@@ -67,11 +67,11 @@ public class BookController {
      */
     @RequestMapping(value = "findBooks/{authorId}", method = RequestMethod.GET)
     public String findBooksByAuthorId(Model model, @PathVariable("authorId") Long authorId) {
-        if (authorId > 0) {
+        if (authorId <= 0) {
+            throw new IllegalStateException("Идентификатор автора не может быть меньше или равен 0");
+        } else {
             model.addAttribute("booksByAuthorList", bookService.getBooksByAuthorId(authorId));
             return "booksByAuthor";
-        } else {
-            throw new IllegalStateException("Идентификатор автора не может быть меньше или равен 0");
         }
     }
 
@@ -83,12 +83,12 @@ public class BookController {
      */
     @RequestMapping(value = "findBook/{id}", method = RequestMethod.GET)
     public String findBookById(Model model, @PathVariable("id") Long id) {
-        if (id > 0) {
+        if (id <= 0) {
+            throw new IllegalStateException("Идентификатор книги не может быть меньше или равен 0");
+        } else {
             model.addAttribute("bookById", bookService.getBookById(id));
             model.addAttribute("bookAuthors", bookService.getBookAuthorsByBookId(id));
             return "bookInfo";
-        } else {
-            throw new IllegalStateException("Идентификатор книги не может быть меньше или равен 0");
         }
     }
 

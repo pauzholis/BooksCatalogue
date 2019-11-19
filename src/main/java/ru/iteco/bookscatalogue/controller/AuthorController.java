@@ -66,12 +66,12 @@ public class AuthorController {
      */
     @RequestMapping(value = "findAuthor/{id}", method = RequestMethod.GET)
     public String findAuthorById(Model model, @PathVariable("id") Long id) {
-        if (id > 0) {
+        if (id <= 0) {
+            throw new IllegalStateException("Идентификатор не может быть меньше или равен 0");
+        } else {
             model.addAttribute("authorById", authorService.getAuthorById(id));
             model.addAttribute("authorBooks", authorService.getAuthorBooksByAuthorId(id));
             return "authorInfo";
-        } else {
-            throw new IllegalStateException("Идентификатор не может быть меньше или равен 0");
         }
     }
 }
