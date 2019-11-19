@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www/thymeleaf.org">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <title>Список книг</title>
 
 </head>
@@ -18,6 +18,10 @@
         <input type="text" class="form-control" th:field="*{name}"/>
     </div>
     <button type="submit">Найти</button>
+    <div th:if="${errorMessage}" th:utext="${errorMessage}"
+         style="color:red;font-style:italic;">
+        ...
+    </div>
 </form>
 <br>
 <div>
@@ -29,7 +33,7 @@
             <tr>
                 <td>
                     <a th:href="@{'/findBook/' + ${bookView.id}}"
-                       th:text="${bookView.name}" ></a>
+                       th:text="${bookView.name}"></a>
                 </td>
             </tr>
         </th:block>

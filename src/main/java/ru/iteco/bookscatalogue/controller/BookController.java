@@ -3,6 +3,7 @@ package ru.iteco.bookscatalogue.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,8 +48,15 @@ public class BookController {
     @RequestMapping(value = "findBooks/submit", method = RequestMethod.POST, produces = "text/html; charset=utf-8")
     public String findBook(Model model, @ModelAttribute("bookView") BookView bookView) {
         String name = bookView.name;
-        model.addAttribute("allBooks", bookService.findBookByName(name));
-        return "books";
+        if (StringUtils.isEmpty(name)) {
+            model.addAttribute("errorMessage", "Заполните поле поиска");
+            model.addAttribute("allBooks", bookService.getAllBooks());
+            model.addAttribute("bookView", new BookView());
+            return "books";
+        } else {
+            model.addAttribute("allBooks", bookService.findBookByName(name));
+            return "books";
+        }
     }
 
     /**
@@ -59,8 +67,12 @@ public class BookController {
      */
     @RequestMapping(value = "findBooks/{authorId}", method = RequestMethod.GET)
     public String findBooksByAuthorId(Model model, @PathVariable("authorId") Long authorId) {
-        model.addAttribute("booksByAuthorList", bookService.getBooksByAuthorId(authorId));
-        return "booksByAuthor";
+        if (authorId > 0) {
+            model.addAttribute("booksByAuthorList", bookService.getBooksByAuthorId(authorId));
+            return "booksByAuthor";
+        } else {
+            throw new IllegalStateException("Идентификатор автора не может быть меньше или равен 0");
+        }
     }
 
     /**
@@ -71,9 +83,13 @@ public class BookController {
      */
     @RequestMapping(value = "findBook/{id}", method = RequestMethod.GET)
     public String findBookById(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("bookById", bookService.getBookById(id));
-        model.addAttribute("bookAuthors", bookService.getBookAuthorsByBookId(id));
-        return "bookInfo";
+        if (id > 0) {
+            model.addAttribute("bookById", bookService.getBookById(id));
+            model.addAttribute("bookAuthors", bookService.getBookAuthorsByBookId(id));
+            return "bookInfo";
+        } else {
+            throw new IllegalStateException("Идентификатор книги не может быть меньше или равен 0");
+        }
     }
 
     /**
@@ -102,11 +118,8 @@ public class BookController {
         String firstName = addBookForm.firstName;
         String middleName = addBookForm.middleName;
 
-        if (bookName != null && bookName.length() > 0
-                && lastName != null && lastName.length() > 0
-                && middleName != null && middleName.length() > 0
-                && firstName != null && firstName.length() > 0
-                ) {
+        if (!StringUtils.isEmpty(bookName) && !StringUtils.isEmpty(lastName) && !StringUtils.isEmpty(firstName)
+                && !StringUtils.isEmpty(middleName)) {
             bookService.saveBookAndAuthor(addBookForm);
             return "redirect:/books";
         }

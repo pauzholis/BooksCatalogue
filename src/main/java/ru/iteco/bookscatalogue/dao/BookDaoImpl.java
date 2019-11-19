@@ -1,14 +1,13 @@
 package ru.iteco.bookscatalogue.dao;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.iteco.bookscatalogue.model.Author;
 import ru.iteco.bookscatalogue.model.Book;
 
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,21 +17,17 @@ import java.util.List;
 @Repository
 public class BookDaoImpl implements BookDao {
 
-    private final SessionFactory sessionFactory;
-
-    @Autowired
-    public BookDaoImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    @PersistenceContext
+    private EntityManager em;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Book> getLastBooksList(int count) {
+    public List<Book> getLastBooksList() {
         String queryString = String.format("SELECT b FROM %s b ORDER BY b.id DESC", Book.class.getSimpleName());
-        Query<Book> query = getSession().createQuery(queryString, Book.class);
-        query.setMaxResults(count);
+        TypedQuery<Book> query = em.createQuery(queryString, Book.class);
+        query.setMaxResults(10);
         return query.getResultList();
     }
 
@@ -41,7 +36,7 @@ public class BookDaoImpl implements BookDao {
      */
     @Override
     public List<Book> getBooksByAuthorId(Long authorId) {
-        Author author = getSession().get(Author.class, authorId);
+        Author author = em.find(Author.class, authorId);
         return new ArrayList<>(author.getBooks());
     }
 
@@ -51,7 +46,7 @@ public class BookDaoImpl implements BookDao {
     @Override
     public List<Book> getAllBooks() {
         String queryString = String.format("SELECT b FROM %s b ORDER BY b.name", Book.class.getSimpleName());
-        Query<Book> query = getSession().createQuery(queryString, Book.class);
+        TypedQuery<Book> query = em.createQuery(queryString, Book.class);
         return query.getResultList();
     }
 
@@ -63,7 +58,7 @@ public class BookDaoImpl implements BookDao {
         String queryString = String.format(
                 "SELECT b FROM %s b WHERE LOWER(b.name) LIKE LOWER(:name) ", Book.class.getSimpleName()
         );
-        Query<Book> query = getSession().createQuery(queryString, Book.class);
+        TypedQuery<Book> query = em.createQuery(queryString, Book.class);
         query.setParameter("name", "%" + name + "%");
         return query.getResultList();
     }
@@ -73,7 +68,7 @@ public class BookDaoImpl implements BookDao {
      */
     @Override
     public Book getBookById(Long id) {
-        return getSession().get(Book.class, id);
+        return em.find(Book.class, id);
     }
 
     /**
@@ -81,9 +76,8 @@ public class BookDaoImpl implements BookDao {
      */
     @Override
     public void saveBookAndAuthor(Book book, Author author) {
-        Session session = getSession();
-        session.persist(book);
-        session.persist(author);
+        em.persist(book);
+        em.persist(author);
     }
 
     @Override
@@ -91,7 +85,7 @@ public class BookDaoImpl implements BookDao {
         String queryString = String.format(
                 "SELECT b FROM %s b WHERE b.name = :name ", Book.class.getSimpleName()
         );
-        Query<Book> query = getSession().createQuery(queryString, Book.class);
+        TypedQuery<Book> query = em.createQuery(queryString, Book.class);
         query.setParameter("name", name);
         try {
             return query.getSingleResult();
@@ -100,12 +94,4 @@ public class BookDaoImpl implements BookDao {
         }
     }
 
-    /**
-     * Получить текущую сессию
-     *
-     * @return текущая ссессия
-     */
-    private Session getSession() {
-        return sessionFactory.getCurrentSession();
-    }
 }

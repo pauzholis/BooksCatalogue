@@ -39,9 +39,13 @@ public class WebBookService implements BookService {
      */
     @Override
     @Transactional
-    public List<BookView> getLastAddedBooksList(int count) {
-        List<Book> books = bookDao.getLastBooksList(count);
-        return bookViewMapper(books);
+    public List<BookView> getLastAddedBooksList() {
+        List<Book> books = bookDao.getLastBooksList();
+        if (books != null) {
+            return bookViewMapper(books);
+        } else {
+            throw new IllegalStateException("Не удалось получить список последних добавленных книг");
+        }
     }
 
     /**
@@ -51,7 +55,11 @@ public class WebBookService implements BookService {
     @Transactional
     public List<BookView> getBooksByAuthorId(Long authorId) {
         List<Book> books = bookDao.getBooksByAuthorId(authorId);
-        return bookViewMapper(books);
+        if (books != null) {
+            return bookViewMapper(books);
+        } else {
+            throw new IllegalStateException("Не удалось получить список книг автора");
+        }
     }
 
     /**

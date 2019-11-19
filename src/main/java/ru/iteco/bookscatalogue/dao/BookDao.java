@@ -13,10 +13,9 @@ public interface BookDao {
     /**
      * Получить 10 последних книг
      *
-     * @param count кол-во последних загруженных книг
      * @return список последних загруженных книг
      */
-    List<Book> getLastBooksList(int count);
+    List<Book> getLastBooksList();
 
     /**
      * Получить все книги автора по идентификатору автора

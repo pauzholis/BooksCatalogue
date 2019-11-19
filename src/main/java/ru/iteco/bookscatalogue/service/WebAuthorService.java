@@ -37,7 +37,11 @@ public class WebAuthorService implements AuthorService {
     @Transactional
     public List<AuthorView> getAllAuthors() {
         List<Author> authors = authorDao.getAllAuthors();
-        return authorViewMapper(authors);
+        if (authors != null) {
+            return authorViewMapper(authors);
+        } else {
+            throw new IllegalStateException("Не удалось получить список авторов");
+        }
     }
 
     /**
@@ -47,7 +51,11 @@ public class WebAuthorService implements AuthorService {
     @Transactional
     public List<AuthorView> findAuthorsByLastName(String lastName) {
         List<Author> authors = authorDao.getAuthorsByLastName(lastName);
-        return authorViewMapper(authors);
+        if (authors != null) {
+            return authorViewMapper(authors);
+        } else {
+            throw new IllegalStateException("Произошла ошибка при поиске автора");
+        }
     }
 
     /**

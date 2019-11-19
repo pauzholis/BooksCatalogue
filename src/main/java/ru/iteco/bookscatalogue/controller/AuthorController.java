@@ -3,6 +3,7 @@ package ru.iteco.bookscatalogue.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import ru.iteco.bookscatalogue.view.AuthorView;
 @Controller
 @RequestMapping(value = "/")
 public class AuthorController {
+
     private final AuthorService authorService;
 
     @Autowired
@@ -45,8 +47,15 @@ public class AuthorController {
     @RequestMapping(value = "findAuthors/submit", method = RequestMethod.POST, produces = "text/html; charset=utf-8")
     public String findAuthor(Model model, @ModelAttribute("authorView") AuthorView authorView) {
         String lastName = authorView.lastName;
-        model.addAttribute("allAuthors", authorService.findAuthorsByLastName(lastName));
-        return "authors";
+        if (StringUtils.isEmpty(lastName)) {
+            model.addAttribute("errorMessage", "Заполните поле поиска");
+            model.addAttribute("allAuthors", authorService.getAllAuthors());
+            model.addAttribute("authorView", new AuthorView());
+            return "authors";
+        } else {
+            model.addAttribute("allAuthors", authorService.findAuthorsByLastName(lastName));
+            return "authors";
+        }
     }
 
     /**
@@ -57,8 +66,12 @@ public class AuthorController {
      */
     @RequestMapping(value = "findAuthor/{id}", method = RequestMethod.GET)
     public String findAuthorById(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("authorById", authorService.getAuthorById(id));
-        model.addAttribute("authorBooks", authorService.getAuthorBooksByAuthorId(id));
-        return "authorInfo";
+        if (id > 0) {
+            model.addAttribute("authorById", authorService.getAuthorById(id));
+            model.addAttribute("authorBooks", authorService.getAuthorBooksByAuthorId(id));
+            return "authorInfo";
+        } else {
+            throw new IllegalStateException("Идентификатор не может быть меньше или равен 0");
+        }
     }
 }

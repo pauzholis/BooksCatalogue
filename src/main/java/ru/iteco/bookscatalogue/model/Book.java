@@ -1,6 +1,5 @@
 package ru.iteco.bookscatalogue.model;
 
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -9,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.Version;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +25,12 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    /**
+     * Служебное поле hibernate
+     */
+    @Version
+    private Integer version;
 
     /**
      * Название
@@ -56,9 +62,5 @@ public class Book {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }

@@ -29,7 +29,7 @@ public class MainPageController {
      */
     @RequestMapping(value = "index", method = RequestMethod.GET)
     public String getMainPageBooksList(Model model) {
-        model.addAttribute("bookView", bookService.getLastAddedBooksList(10));
+        model.addAttribute("bookView", bookService.getLastAddedBooksList());
         return "index";
     }
 }

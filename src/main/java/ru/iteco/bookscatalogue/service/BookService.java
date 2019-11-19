@@ -13,10 +13,8 @@ public interface BookService {
 
     /**
      * Получить последние добавленные книги
-     *
-     * @param count кол-во последних книг
      */
-    List<BookView> getLastAddedBooksList(int count);
+    List<BookView> getLastAddedBooksList();
 
     /**
      * Получить все книги автора
